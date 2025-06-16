@@ -45,7 +45,7 @@ cd ./AI_assistant
 
 ### 4. Run `llama3.2` on local system 
 - Install `ollama`
-- Pull the 'llama3.2` model
+- Pull the `llama3.2` model
 - Run the model by `ollama run llama3.2` and keep this running in background on CMD or Powershell.
 
 ### 5. Run the Service
