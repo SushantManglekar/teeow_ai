@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -5,6 +6,9 @@ from sqlalchemy import update, delete
 from app.models.chat_session import ChatSession
 from datetime import datetime
 from uuid import UUID
+from app.utils.setup_logger import setup_logger
+
+logger = logging.getLogger("ai_assistant")
 
 # CREATE
 async def create_chat_session(db: AsyncSession, session: ChatSession) -> ChatSession:
@@ -13,19 +17,27 @@ async def create_chat_session(db: AsyncSession, session: ChatSession) -> ChatSes
     db.add(session)
     await db.commit()
     await db.refresh(session)
+    logger.info(f"Chat session created: {session.id}")
     return session
 
 # READ - get one by ID
-async def get_chat_session(db: AsyncSession, session_id) -> Optional[ChatSession]:
+async def get_chat_session(db: AsyncSession, session_id: UUID) -> Optional[ChatSession]:
     result = await db.execute(select(ChatSession).where(ChatSession.id == session_id))
-    return result.scalar_one_or_none()
+    session = result.scalar_one_or_none()
+    if session:
+        logger.info(f"Chat session fetched: {session_id}")
+    else:
+        logger.warning(f"Chat session not found: {session_id}")
+    return session
 
 # READ - get all
 async def get_all_chat_sessions(db: AsyncSession, limit: int = 100, offset: int = 0) -> List[ChatSession]:
     result = await db.execute(
         select(ChatSession).offset(offset).limit(limit)
     )
-    return result.scalars().all()
+    sessions = result.scalars().all()
+    logger.info(f"Fetched {len(sessions)} chat sessions (limit={limit}, offset={offset})")
+    return sessions
 
 # UPDATE
 async def update_chat_session(db: AsyncSession, session_id: UUID, update_data: dict) -> Optional[ChatSession]:
@@ -35,13 +47,18 @@ async def update_chat_session(db: AsyncSession, session_id: UUID, update_data: d
         .values(**update_data)
     )
     await db.commit()
-    # Re-fetch updated session
+    logger.info(f"Updated chat session: {session_id} with data: {update_data}")
     return await get_chat_session(db, session_id)
 
 # DELETE
-async def delete_chat_session(db: AsyncSession, session_id) -> bool:
+async def delete_chat_session(db: AsyncSession, session_id: UUID) -> bool:
     result = await db.execute(
         delete(ChatSession).where(ChatSession.id == session_id)
     )
     await db.commit()
-    return result.rowcount > 0
+    success = result.rowcount > 0
+    if success:
+        logger.info(f"Deleted chat session: {session_id}")
+    else:
+        logger.warning(f"Tried to delete non-existent chat session: {session_id}")
+    return success

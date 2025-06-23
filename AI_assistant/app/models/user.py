@@ -8,7 +8,7 @@ from enum import Enum as PyEnum
 
 
 class TierEnum(PyEnum):
-    FREE = "free"
+    FREE = "basic"
     PRO = "pro"
     PREMIUM = "premium"
 

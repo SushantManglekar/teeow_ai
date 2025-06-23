@@ -1,0 +1,202 @@
+{
+  "version": "1.0.0",
+  "intents": [
+    {
+      "intent": "recommendation",
+      "sub_intents": ["food", "attractions", "activities", "local gems"],
+      "description": "User is looking for suggestions or recommendations, often based on location, context or personal preferences.",
+      "examples": [
+        "Find best restaurants near me",
+        "What to do in Paris this weekend?",
+        "Cool things to see in Goa today"
+      ],
+      "flow_id": "recommendation_flow",
+      "confidence_threshold": 0.75,
+      "system_instruction": "Suggest 2 to 3 personalized and highly-rated {sub_intent} options based on user preferences, location ({user_location}), and time ({current_time}). Use real-time data if available. Respond in a friendly, clear tone and include ratings, descriptions, and links.",
+      "required_prompt_parameters": [
+        "intent", "sub_intent", "user_query", "user_location", "current_time",
+        "user_preferences", "chat_history_summary", "chat_memory", "output_format"
+      ],
+      "optional_prompt_parameters": ["realtime_info"],
+      "output_format": {
+        "title": "Top Recommendations for {sub_intent} in {user_location}",
+        "summary": "Here are the most relevant, high-quality suggestions based on your preferences:",
+        "items": [
+          {
+            "name": "Place Name",
+            "description": "Short summary of what makes it great.",
+            "rating": 4.5,
+            "price_level": "$$",
+            "distance_km": 1.2,
+            "link": "https://..."
+          }
+        ],
+        "follow_up": "Want to explore similar options or book something now?"
+      }
+    },
+    {
+      "intent": "booking",
+      "sub_intents": ["flights", "hotels", "rentals", "experiences"],
+      "description": "User wants to book something: hotels, flights, local activities. Often includes price, time, or location constraints.",
+      "examples": [
+        "Book a flight to Dubai on July 10",
+        "Reserve a hotel in Tokyo for 3 nights",
+        "Find a car rental in Barcelona"
+      ],
+      "flow_id": "booking_flow",
+      "confidence_threshold": 0.8,
+      "system_instruction": "Help the user book a {sub_intent} using their preferences, location ({user_location}), time ({current_time}), and real-time availability if provided. Return structured options with prices, ratings, and booking links.",
+      "required_prompt_parameters": [
+        "intent", "sub_intent", "user_query", "user_location", "current_time",
+        "user_preferences", "output_format"
+      ],
+      "optional_prompt_parameters": ["travel_dates", "destination", "realtime_info"],
+      "output_format": {
+        "title": "Best Booking Options for {sub_intent}",
+        "summary": "Here are top booking choices based on your needs:",
+        "items": [
+          {
+            "name": "Option Name",
+            "price": "$320",
+            "rating": 4.4,
+            "details": "Free cancellation, breakfast included",
+            "link": "https://..."
+          }
+        ],
+        "follow_up": "Would you like to confirm or see more options?"
+      }
+    },
+    {
+      "intent": "planning",
+      "sub_intents": ["itinerary", "day planning", "budget trip", "multi-day trip"],
+      "description": "User is looking for help planning a trip, often with specific days, preferences, or destinations in mind.",
+      "examples": [
+        "Plan a 5-day trip to Japan",
+        "Itinerary for Rome weekend",
+        "Budget-friendly 3-day Goa plan"
+      ],
+      "flow_id": "planning_flow",
+      "confidence_threshold": 0.75,
+      "system_instruction": "Create a detailed and personalized {sub_intent} based on the user's travel dates, preferences, and location. Format the output day-wise. Keep it flexible and easy to follow.",
+      "required_prompt_parameters": [
+        "intent", "sub_intent", "user_query", "user_location", "current_time",
+        "user_preferences", "travel_dates", "output_format"
+      ],
+      "optional_prompt_parameters": ["realtime_info", "chat_history_summary"],
+      "output_format": {
+        "title": "Your {sub_intent} Plan",
+        "summary": "Here's a suggested plan:",
+        "days": [
+          {
+            "day": "Day 1",
+            "activities": [
+              "Morning: Visit XYZ",
+              "Afternoon: Lunch at ABC",
+              "Evening: Sunset cruise"
+            ]
+          }
+        ],
+        "follow_up": "Want to modify this or get more suggestions?"
+      }
+    },
+    {
+      "intent": "review_analysis",
+      "sub_intents": ["compare", "pros_cons", "recent_feedback"],
+      "description": "User wants to interpret reviews or compare two or more places based on public feedback.",
+      "examples": [
+        "Which is better, Hotel A or B?",
+        "What are the reviews for Cafe Lota?",
+        "Compare Taj and Leela Palace Delhi"
+      ],
+      "flow_id": "review_analysis_flow",
+      "confidence_threshold": 0.7,
+      "system_instruction": "Analyze recent reviews and ratings for the given {sub_intent}. Compare options if multiple are mentioned. Highlight pros, cons, and an overall recommendation.",
+      "required_prompt_parameters": [
+        "intent", "sub_intent", "user_query", "output_format"
+      ],
+      "optional_prompt_parameters": ["realtime_info", "comparison_targets"],
+      "output_format": {
+        "title": "Review Summary",
+        "comparison": [
+          {
+            "name": "Place A",
+            "pros": ["Great location", "Clean rooms"],
+            "cons": ["Pricey", "Small bathrooms"],
+            "rating": 4.2
+          },
+          {
+            "name": "Place B",
+            "pros": ["Affordable", "Good food"],
+            "cons": ["Far from center"],
+            "rating": 4.0
+          }
+        ],
+        "follow_up": "Want my pick based on your preferences?"
+      }
+    },
+    {
+      "intent": "location_discovery",
+      "sub_intents": ["near_me", "trending", "open_now", "real_time_discovery"],
+      "description": "User wants to discover what's interesting near them in real time. Usually uses 'near me', 'now', or 'trending'.",
+      "examples": [
+        "Things to do near me right now",
+        "What's trending in Mumbai?",
+        "Fun stuff open nearby"
+      ],
+      "flow_id": "location_discovery_flow",
+      "confidence_threshold": 0.7,
+      "system_instruction": "Show the most interesting or trending {sub_intent} options near {user_location} that are open now. Use real-time data when available. Prioritize distance, rating, and recency.",
+      "required_prompt_parameters": [
+        "intent", "sub_intent", "user_query", "user_location", "current_time", "output_format"
+      ],
+      "optional_prompt_parameters": ["realtime_info", "user_preferences"],
+      "output_format": {
+        "title": "Trending Nearby",
+        "summary": "These places are currently popular near you:",
+        "items": [
+          {
+            "name": "Place Name",
+            "category": "Cafe",
+            "open_now": true,
+            "distance_km": 0.8,
+            "rating": 4.6,
+            "link": "https://..."
+          }
+        ],
+        "follow_up": "Want directions or more like these?"
+      }
+    },
+    {
+      "intent": "utility",
+      "sub_intents": ["currency", "translation", "weather", "culture", "safety"],
+      "description": "User is asking for practical travel info: weather, money, translations, safety tips, etc.",
+      "examples": [
+        "What's the exchange rate in Thailand?",
+        "Translate thank you into Spanish",
+        "Is it safe to travel in Egypt now?",
+        "Weather in Tokyo next week"
+      ],
+      "flow_id": "utility_flow",
+      "confidence_threshold": 0.8,
+      "system_instruction": "Provide concise, up-to-date travel information related to the {sub_intent} query. Include facts, numbers, or translations, and format it for easy reading.",
+      "required_prompt_parameters": [
+        "intent", "sub_intent", "user_query", "current_time", "output_format"
+      ],
+      "optional_prompt_parameters": ["user_location", "realtime_info"],
+      "output_format": {
+        "title": "Travel Info",
+        "details": [
+          {
+            "type": "weather",
+            "value": "Partly cloudy, 29°C, humid"
+          },
+          {
+            "type": "currency",
+            "value": "1 USD = 82.5 INR"
+          }
+        ],
+        "follow_up": "Want travel tips for this location?"
+      }
+    }
+  ]
+}
